@@ -1,0 +1,9 @@
+language: python
+
+notifications:
+    irc: "chat.freenode.net#radare"
+    email: false
+
+before_install: ./scripts/install.sh
+
+script: python src/test.py
