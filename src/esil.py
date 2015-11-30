@@ -18,17 +18,28 @@ class Emulator:
     def step(self):
         self.prev_state = self.registers()
         inst = self.instruction()
-        self.last_emulated = {
-                "opcode": inst[0]["opcode"],
-                "esil": inst[0]["esil"],
-                "offset": hex(inst[0]["offset"])
-                }
+        if(inst[0]["type"] == "invalid"):
+            self.last_emulated = {
+                    "opcode": "invalid",
+                    "esil": "invalid",
+                    "offset": hex(inst[0]["offset"])
+                    }
+            # TODO: Update stats
+        else:
+            self.last_emulated = {
+                    "opcode": inst[0]["opcode"],
+                    "esil": inst[0]["esil"],
+                    "offset": hex(inst[0]["offset"])
+                    }
         self.r2.cmd("aes")
         self.r2.cmd("so")
 
     # Log results
     def log(self, original, event, diff):
         info = {}
+        # For now, do not log invalid opcodes
+        if("opcode" in self.last_emulated and self.last_emulated["opcode"] == "invalid"):
+            return
         info["instruction"] = self.last_emulated
         info["event"] = event
         info["diff"] = diff

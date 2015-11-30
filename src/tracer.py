@@ -13,8 +13,10 @@ class Tracer:
     def __init__(self, logfile, tracked = None):
         self.stats = {}
         self.logfile = logfile
+        self.r = []
         self.tracked = tracked
         f = open(logfile, "w")
+        f.write("{}")
         f.close()
 
     def get_state(self):
@@ -45,17 +47,16 @@ class Tracer:
         return r
 
     def write_log(self, data):
-        f = open(self.logfile, "a+")
+        f = open(self.logfile, "w")
         f.write(json.dumps(data))
         f.close()
 
     def log(self, event):
         gdb.events.stop.disconnect(self.log)
-        r = []
         while True:
-            r.append(self.get_state())
+            self.r.append(self.get_state())
             gdb.execute("si")
-        self.write_log(r)
+        self.write_log(self.r)
         gdb.execute("quit")
 
     def run(self):
@@ -64,6 +65,7 @@ class Tracer:
         gdb.execute("run")
 
     def exit(self):
+        self.write_log(self.r)
         gdb.execute("quit")
 
 
