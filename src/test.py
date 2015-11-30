@@ -44,7 +44,7 @@ import json
 
 def init_gdb(binfile, bp):
     # Create a command to execute this script within gdb.
-    cmd = "gdb --eval-command 'b *{}' --command src/tracer.py --args {} 2>/dev/null".format(bp, binfile)
+    cmd = "sudo gdb --eval-command 'b *{}' --command src/tracer.py --args {}".format(bp, binfile)
     cmd = cmd.replace('\\', '\\\\').replace('`', '\\`').replace('"', '\\"')
     print cmd
     check_output(cmd, shell=True)
@@ -65,8 +65,8 @@ def cleanup():
 
 if __name__ == "__main__":
     # TODO: Command line args
-    path = "bin/"
-    log_path = "log/"
+    path = "./bin/"
+    log_path = "./log/"
     bins = [f for f in listdir(path) if isfile(join(path, f))]
     print "Starting Tests."
     for b in bins:
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         emu = esil.Emulator(path + b, logfile)
         entry0 = emu.entry()
 
-        init_gdb(b, entry0)
+        init_gdb(path + b, entry0)
 
         # Load the JSON with the tracer results
         logfile = join(log_path + "trace_log")

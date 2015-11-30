@@ -53,13 +53,6 @@ class Tracer:
         gdb.events.stop.disconnect(self.log)
         r = []
         while True:
-            # DEBUG
-            if len(r) > 10:
-                break
-            # Optimize some memory
-            if len(r) > 1000:
-                self.write_log(r)
-                r = []
             r.append(self.get_state())
             gdb.execute("si")
         self.write_log(r)
