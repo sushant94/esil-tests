@@ -1,9 +1,16 @@
 language: python
 
 notifications:
-    irc: "chat.freenode.net#radare"
+    irc: "chat.freenode.net#radare-rsoc"
     email: false
 
-before_install: ./scripts/install.sh
+before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get install -y install gdb
+    - wget http://github.com/mattikus/pygist/raw/master/pygist.py -O ~/bin/pygist
+    - sudo apt-get install -y git
+    - git clone https://github.com/radare/radare2.git
 
-script: python src/test.py
+script:
+    - ./radare2/sys/install.sh
+    - python src/test.py

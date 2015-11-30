@@ -45,6 +45,9 @@ class Emulator:
     def set_register(self, key, value):
         s = self.r2.cmd("aer {} = {}".format(key, value))
 
+    def entry(self):
+        return self.r2.cmd("s").strip()
+
     def exit(self):
         f = open(self.logfile, "w")
         f.write(json.dumps(self.logs))

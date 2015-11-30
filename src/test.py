@@ -21,7 +21,7 @@ against the gdb register states.
 
 Behavior when ESIL instruction is unimplemented:
     If an ESIL instruction is unimplemented, then we record this as a "TODO"
-    rather than a mismatch
+    rather than a mismatch.
 
 Additionally, the ESIL emulator also keeps track of various stats such as
 number of TODOs encountered, number of instructions emulated, most common
@@ -42,9 +42,9 @@ from os.path import isfile, join
 from subprocess import check_output
 import json
 
-def init_gdb(binfile):
+def init_gdb(binfile, bp):
     # Create a command to execute this script within gdb.
-    cmd = 'gdb --command src/tracer.py --args {}'.format(binfile)
+    cmd = "gdb --eval-command 'b *{}' --command src/tracer.py --args {} 2>/dev/null".format(bp, binfile)
     cmd = cmd.replace('\\', '\\\\').replace('`', '\\`').replace('"', '\\"')
     print cmd
     check_output(cmd, shell=True)
@@ -68,18 +68,23 @@ if __name__ == "__main__":
     path = "bin/"
     log_path = "log/"
     bins = [f for f in listdir(path) if isfile(join(path, f))]
+    print "Starting Tests."
     for b in bins:
         # Create trace file
-        logfile = join(log_path + "trace_log")
-        init_gdb(b)
+        logfile = join(log_path, b + ".log")
+
+        # Create a new logfile for ESIL emulation
+        emu = esil.Emulator(path + b, logfile)
+        entry0 = emu.entry()
+
+        init_gdb(b, entry0)
+
         # Load the JSON with the tracer results
+        logfile = join(log_path + "trace_log")
         logfile = open(logfile, "r")
         results = json.load(logfile)
         logfile.close()
-        # Create a new logfile for ESIL emulation
-        logfile = join(log_path, b + ".log")
-        # Run the bin inside the emulator
-        emu = esil.Emulator(path + b, logfile)
+
         prev_state = {}
         for r in results:
             diff = compare_states(r["registers"], emu.registers())

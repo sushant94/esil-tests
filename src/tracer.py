@@ -65,8 +65,7 @@ class Tracer:
         self.write_log(r)
         gdb.execute("quit")
 
-    def run(self, bp):
-        gdb.execute("b *{}".format(str(bp)))
+    def run(self):
         gdb.events.exited.connect(lambda event: self.exit())
         gdb.events.stop.connect(self.log)
         gdb.execute("run")
@@ -78,5 +77,4 @@ class Tracer:
 if __name__ == "__main__":
     logfile = "log/trace_log"
     t = Tracer(logfile)
-    # TODO: Hardcoded, change later
-    t.run(0x00404890)
+    t.run()
