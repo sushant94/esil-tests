@@ -12,21 +12,24 @@ class Emulator:
         self.binfile = binfile
         self.logfile = logfile
         self.logs = []
+        self.prev_state = {}
+        self.last_emulated = {}
 
     def step(self):
-        print "Stepping"
+        self.prev_state = self.registers()
+        inst = self.instruction()
+        self.last_emulated = {
+                "opcode": inst[0]["opcode"],
+                "esil": inst[0]["esil"],
+                "offset": hex(inst[0]["offset"])
+                }
         self.r2.cmd("aes")
         self.r2.cmd("so")
 
     # Log results
     def log(self, original, event, diff):
         info = {}
-        inst = self.instruction()
-        h = {}
-        h["opcode"] = inst[0]["opcode"]
-        h["esil"] = inst[0]["esil"]
-        h["offset"] = hex(inst[0]["offset"])
-        info["instruction"] = h
+        info["instruction"] = self.last_emulated
         info["event"] = event
         info["diff"] = diff
         self.logs.append(info)
@@ -40,7 +43,6 @@ class Emulator:
     # In case of a mismatch, all further instructions are also bound to be
     # incorrect. Instead we set registers to correct results and continue.
     def set_register(self, key, value):
-        print "set"
         s = self.r2.cmd("aer {} = {}".format(key, value))
 
     def exit(self):

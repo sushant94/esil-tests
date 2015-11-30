@@ -18,6 +18,22 @@ different results and hence would be flagged incorrect by the tester.
 
 The comparison is performed by compare_states that compares the ESIL emulation
 against the gdb register states.
+
+Behavior when ESIL instruction is unimplemented:
+    If an ESIL instruction is unimplemented, then we record this as a "TODO"
+    rather than a mismatch
+
+Additionally, the ESIL emulator also keeps track of various stats such as
+number of TODOs encountered, number of instructions emulated, most common
+missing instructions etc. These statistics can help us decide what to focus on
+in ESIL next.
+
+Error reporting:
+    - To make the Error logs generated easily accessible, we upload the json
+    logs to a gist.
+    - Errors are automatically reported by raising an issue on the repository
+    with the link to the error logs.
+    - These are done as a part of the cleanup step.
 '''
 
 import esil
@@ -64,15 +80,21 @@ if __name__ == "__main__":
         logfile = join(log_path, b + ".log")
         # Run the bin inside the emulator
         emu = esil.Emulator(path + b, logfile)
+        prev_state = {}
         for r in results:
             diff = compare_states(r["registers"], emu.registers())
             if len(diff) > 0:
                 # This means there is a potential bug in our emulation. Log this, reset
                 # registers to correct values and continue emulation.
+                for (k, v) in diff.iteritems():
+                    if k not in emu.prev_state: continue
+                    diff[k]["esil_old"] = hex(emu.prev_state[k])
+                    diff[k]["gdb_old"] = hex(prev_state[k])
                 emu.log(r, "Mismatch", diff)
                 for (k, v) in diff.iteritems():
                     emu.set_register(k, v["gdb"])
             emu.step()
+            prev_state = r["registers"]
         emu.exit()
         cleanup()
 
