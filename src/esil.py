@@ -8,6 +8,7 @@ class Emulator:
         self.r2.cmd("aaa")
         self.r2.cmd("e asm.esil = true")
         self.r2.cmd("e scr.color = false")
+        self.r2.cmd("oo+")
         self.stats = {}
         self.binfile = binfile
         self.logfile = logfile
@@ -24,7 +25,6 @@ class Emulator:
                     "esil": "invalid",
                     "offset": hex(inst[0]["offset"])
                     }
-            # TODO: Update stats
         else:
             self.last_emulated = {
                     "opcode": inst[0]["opcode"],
