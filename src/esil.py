@@ -8,7 +8,7 @@ class Emulator:
         self.r2.cmd("aaa")
         self.r2.cmd("e asm.esil = true")
         self.r2.cmd("e scr.color = false")
-        self.r2.cmd("oo+")
+        self.r2.cmd("e io.cache = true")
         self.stats = {}
         self.binfile = binfile
         self.logfile = logfile
