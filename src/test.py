@@ -86,6 +86,7 @@ if __name__ == "__main__":
         results = json.load(logfile)
         logfile.close()
 
+        print "Loaded execution logs"
         prev_state = {}
         #emu.step()
         for r in results:
