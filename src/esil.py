@@ -18,9 +18,14 @@ class Emulator:
 
     def step(self):
         self.prev_state = self.registers()
-        self.r2.cmd("aes")
         inst = self.instruction()
-        if(inst[0]["type"] == "invalid"):
+        if len(inst) == 0:
+            self.last_emulated = {
+                    "opcode": "invalid",
+                    "esil": "invalid",
+                    "offset": "invalid"
+                    }
+        elif(inst[0]["type"] == "invalid"):
             self.last_emulated = {
                     "opcode": "invalid",
                     "esil": "invalid",
@@ -32,6 +37,7 @@ class Emulator:
                     "esil": inst[0]["esil"],
                     "offset": hex(inst[0]["offset"])
                     }
+        self.r2.cmd("aes")
         self.r2.cmd("so")
 
     # Log results
@@ -49,7 +55,7 @@ class Emulator:
         return json.loads(self.r2.cmd("arj"))
 
     def instruction(self):
-        return json.loads(self.r2.cmd("pdj 1"))
+        return json.loads(self.r2.cmd("pdj -1"))
 
     # In case of a mismatch, all further instructions are also bound to be
     # incorrect. Instead we set registers to correct results and continue.
