@@ -49,7 +49,7 @@ class Emulator:
         return json.loads(self.r2.cmd("arj"))
 
     def instruction(self):
-        return json.loads(self.r2.cmd("pdj 1"))
+        return json.loads(self.r2.cmd("pdj -1"))
 
     # In case of a mismatch, all further instructions are also bound to be
     # incorrect. Instead we set registers to correct results and continue.
