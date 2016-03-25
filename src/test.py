@@ -41,6 +41,7 @@ from os import listdir
 from os.path import isfile, join
 from subprocess import check_output
 import json
+import struct
 
 def init_gdb(binfile, bp):
     # Create a command to execute this script within gdb.
@@ -54,7 +55,7 @@ def compare_states(run, emu):
     for (k, v) in run.iteritems():
         if k not in emu:
             continue
-        if emu[k] != v:
+        if emu[k] != struct.unpack('>q', ("%x" % v).rjust(16, '0').decode('hex'))[0]:
             diff[k] = { "esil": hex(emu[k]), "gdb": hex(v) }
     return diff
 
@@ -86,6 +87,7 @@ if __name__ == "__main__":
         logfile.close()
 
         prev_state = {}
+        #emu.step()
         for r in results:
             diff = compare_states(r["registers"], emu.registers())
             if len(diff) > 0:
