@@ -65,7 +65,10 @@ if __name__ == "__main__":
             iiter = -1
         elif option == "N" or option == "":
             iiter += 1
-            pretty_print(cur_l[iiter])
+            if iiter < len(cur_l):
+                pretty_print(cur_l[iiter])
+            else:
+                print "No more to display."
         else:
             break
         print "Command: ",
