@@ -78,7 +78,7 @@ if __name__ == "__main__":
         emu = esil.Emulator(path + b, logfile)
         entry0 = emu.entry()
 
-        #init_gdb(path + b, entry0)
+        init_gdb(path + b, entry0)
 
         # Load the JSON with the tracer results
         logfile = join(log_path + "trace_log")
