@@ -25,26 +25,30 @@ def analyze_freq(h):
         freq[opcode].append(k)
     return freq
 
-def pretty_print(r):
+def pretty(r):
+    res = ""
     # TODO
-    print "Binary: Ubuntu 14.04 /bin/ls"
-    print "Instruction: " + r["instruction"]["opcode"]
-    print "ESIL: " + r["instruction"]["esil"]
-    print "Offset: " + r["instruction"]["offset"]
+    res +=  "Binary: Ubuntu 14.04 /bin/ls" + "\n"
+    res +=  "Instruction: " + r["instruction"]["opcode"] + "\n"
+    res +=  "ESIL: " + r["instruction"]["esil"] + "\n"
+    res +=  "Offset: " + r["instruction"]["offset"] + "\n"
     rwd = 10
     vwd = 20
     width = rwd + 4*vwd
-    #print "+" + "-"*(width-1) + "+"
-    print
-    print "| REGISTER".ljust(rwd) + "| GDB".ljust(2*vwd) + "| ESIL".ljust(2*vwd) + "|"
-    print "|" + "-"*(rwd-1) + "|" + "-"*(2*vwd-1) + "|" + "-"*(2*vwd-1) + "|"
+    #res +=  "+" + "-"*(width-1) + "+"
+    res += "\n"
+    res +=  "| REGISTER".ljust(rwd) + "| GDB".ljust(2*vwd) + "| ESIL".ljust(2*vwd) + "|\n"
+    res +=  "|" + "-"*(rwd-1) + "|" + "-"*(2*vwd-1) + "|" + "-"*(2*vwd-1) + "|\n"
     for d in r["diff"]:
         gdb_s = "{} -> {}".format(r["diff"][d]["gdb_old"], r["diff"][d]["gdb"])
         esil_s = "{} -> {}".format(r["diff"][d]["esil_old"], r["diff"][d]["esil"])
-        print "| {} | {} | {} |".format(d.ljust(rwd-3), gdb_s.ljust(2*vwd - 3),\
+        res +=  "| {} | {} | {} |\n".format(d.ljust(rwd-3), gdb_s.ljust(2*vwd - 3),\
                 esil_s.ljust(2*vwd - 3))
-    print "|" + "-"*(rwd-1) + "|" + "-"*(2*vwd-1) + "|" + "-"*(2*vwd-1) + "|"
-    print
+    res += "\n"
+    return res
+
+def pretty_print(r):
+    print pretty(r)
 
 def get_next(i, freq):
     it = freq.items()
@@ -54,6 +58,20 @@ def get_next(i, freq):
 def get_offset(e):
     return e["instruction"]["offset"]
 
+
+'''WARNING! DO NOT USE THIS. CHANGE IT TO A DIRECTORY THAT YOUR GHI USES'''
+ghi_f_path = None
+
+def prepare_report(path, elem):
+    global ghi_f_path
+    if ghi_f_path is None:
+        print "PATH(empty to ignore):",
+        p = raw_input().strip()
+        ghi_f_path = p
+    if len(ghi_f_path) > 0:
+        f = open(ghi_f_path + path, "w")
+        f.write(pretty(elem))
+        f.close()
 
 def update_reports(f, arr, elem):
     # Update the reported list
@@ -107,18 +125,24 @@ if __name__ == "__main__":
                 print "No more to display."
         elif option == "O":
             # Opens a bug with assignee as self, and labeled as "esil" and "blocker"
-            subprocess.call("ghi open --claim --label esil blocker", shell=True)
+            prepare_report("GHI_ISSUE", cur_l[iiter])
+            subprocess.call("ghi open --claim --label esil", shell=True)
             update_reports(report_f, reported, cur_l[iiter])
             # Goto next mis-match
-            iiter += 1
+            option = "N"
+            continue
         elif option == "C":
+            print "Issue:",
             issue = raw_input().strip()
-            subprocess.call("ghi comment" + issue)
+            prepare_report("GHI_COMMENT_{}".format(issue), cur_l[iiter])
+            subprocess.call("ghi comment " + issue, shell=True)
             update_reports(report_f, reported, cur_l[iiter])
-            iiter += 1
+            option = "N"
+            continue
         elif option == "I":
             update_reports(report_f, reported, cur_l[iiter])
-            iiter += 1
+            option = "N"
+            continue
         else:
             report_f.close()
             break

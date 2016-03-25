@@ -9,6 +9,9 @@ class Emulator:
         self.r2.cmd("e asm.esil = true")
         self.r2.cmd("e scr.color = false")
         self.r2.cmd("e io.cache = true")
+        self.r2.cmd("aei")
+        self.r2.cmd("aeim")
+        self.r2.cmd("aeip")
         self.stats = {}
         self.binfile = binfile
         self.logfile = logfile
