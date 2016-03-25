@@ -38,7 +38,6 @@ class Emulator:
                     "offset": hex(inst[0]["offset"])
                     }
         self.r2.cmd("aes")
-        self.r2.cmd("so")
 
     # Log results
     def log(self, original, event, diff):
@@ -55,7 +54,7 @@ class Emulator:
         return json.loads(self.r2.cmd("arj"))
 
     def instruction(self):
-        return json.loads(self.r2.cmd("pdj -1"))
+        return json.loads(self.r2.cmd("pdj 1 @ `ar rip`"))
 
     # In case of a mismatch, all further instructions are also bound to be
     # incorrect. Instead we set registers to correct results and continue.

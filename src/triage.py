@@ -5,9 +5,11 @@ analysis.
 Some basic functions that it currently supports are:
     - Basic Statistics
     - Most frequently mismatched evaluations
-    - Add to ignore list
 
 TODO:
+    - Blacklist / Skip offsets.
+    - Template full bug-reporting. Github API to automatically open this bug.
+    - Generate testcase file for use in r2-regressions automatically.
 '''
 
 import sys
