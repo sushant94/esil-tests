@@ -10,7 +10,6 @@ class Emulator:
         self.r2.cmd("e scr.color = false")
         self.r2.cmd("e io.cache = true")
         self.r2.cmd("aei")
-        self.r2.cmd("aeim")
         self.r2.cmd("aeip")
         self.stats = {}
         self.binfile = binfile
@@ -18,6 +17,9 @@ class Emulator:
         self.logs = []
         self.prev_state = {}
         self.last_emulated = {}
+
+    def init_memory(self, addr):
+        self.r2.cmd("aeim {} 0x10000 Stack".format(addr))
 
     def step(self):
         self.prev_state = self.registers()

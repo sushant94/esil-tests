@@ -89,6 +89,9 @@ if __name__ == "__main__":
         print "Loaded execution logs"
         prev_state = {}
         #emu.step()
+        # Initialize memory (rsp) at the correct location
+        print hex(results[0]["registers"]["rsp"])
+        emu.init_memory(results[0]["registers"]["rsp"])
         for r in results:
             diff = compare_states(r["registers"], emu.registers())
             if len(diff) > 0:
