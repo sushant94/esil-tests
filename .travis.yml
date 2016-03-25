@@ -18,4 +18,4 @@ script:
     - python ./src/test.py
 
 after_script:
-    - gist -a --private ./log/ls.log
+    - gist -a --private ./log/*
