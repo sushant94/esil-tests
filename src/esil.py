@@ -19,7 +19,8 @@ class Emulator:
         self.last_emulated = {}
 
     def init_memory(self, addr):
-        self.r2.cmd("aeim {} 0x10000 Stack".format(addr))
+        addr = addr - (0xf0000/2)
+        self.r2.cmd("aeim {} 0xf0000 Stack".format(addr))
 
     def step(self):
         self.prev_state = self.registers()

@@ -37,7 +37,7 @@ Error reporting:
 '''
 
 import esil
-from os import listdir
+from os import listdir, environ
 from os.path import isfile, join
 from subprocess import check_output
 import json
@@ -78,7 +78,9 @@ if __name__ == "__main__":
         emu = esil.Emulator(path + b, logfile)
         entry0 = emu.entry()
 
-        init_gdb(path + b, entry0)
+        # Trace only if running inside travis
+        if 'TRAVIS' in environ:
+            init_gdb(path + b, entry0)
 
         # Load the JSON with the tracer results
         logfile = join(log_path + "trace_log")
@@ -92,6 +94,8 @@ if __name__ == "__main__":
         # Initialize memory (rsp) at the correct location
         print hex(results[0]["registers"]["rsp"])
         emu.init_memory(results[0]["registers"]["rsp"])
+        print emu.r2.cmd("dr")
+        raw_input()
         for r in results:
             diff = compare_states(r["registers"], emu.registers())
             if len(diff) > 0:
