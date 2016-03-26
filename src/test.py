@@ -92,10 +92,9 @@ if __name__ == "__main__":
         prev_state = {}
         #emu.step()
         # Initialize memory (rsp) at the correct location
-        print hex(results[0]["registers"]["rsp"])
+        print "RSP: " + hex(results[0]["registers"]["rsp"])
         emu.init_memory(results[0]["registers"]["rsp"])
         print emu.r2.cmd("dr")
-        raw_input()
         for r in results:
             diff = compare_states(r["registers"], emu.registers())
             if len(diff) > 0:
